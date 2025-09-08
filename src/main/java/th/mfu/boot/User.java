@@ -46,6 +46,8 @@ public class User {
     public void setDisplayname(String displayname) {
         this.displayname = displayname;
     }
+
+    
     public LocalDate getBirthday() {
         return birthday;
     }

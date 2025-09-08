@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,29 +28,47 @@ public class UserController {
     public ResponseEntity<String> registerUser(@RequestBody User user) {
 
         //TODO: check if user with the username exists
+        if (repo.findByUsername(user.getUsername()) != null) {
+            return new ResponseEntity<>("Username already exists", HttpStatus.CONFLICT);
+        }
        
         //TODO: save the user
+        repo.save(user);
 
         //TODO: remove below and return proper status
-        return new ResponseEntity<>( HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>("User created", HttpStatus.CREATED);
     }
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> list() {
-        
+        List<User> users = repo.findAll();
         //TODO: remove below and return proper result
-        return new ResponseEntity<>( HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{username}")
+    public ResponseEntity<User> getUser(@PathVariable String username) {
+        User user = repo.findByUsername(username);
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         
         //TODO: check if user with the id exists
+        Optional<User> existing = repo.findById(id);
+        if (!existing.isPresent()){
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
        
         //TODO: delete the user
+        repo.deleteById(id);
     
         //TODO: remove below and return proper status
-        return new ResponseEntity<>( HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>("User deleted", HttpStatus.OK);
     }
 
 
